@@ -2,44 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Charts\BerasPremiumChart;
-use App\Charts\BerasMediumChart;
-use App\Charts\KedelaiChart;
-use App\Charts\KedelaiChartChart;
-use App\User;
 use Illuminate\Http\Request;
 use App\Komoditi;
 use Carbon\Carbon;
+use App\Charts\BerasPremiumChart;
+use App\Charts\BerasMediumChart;
+use App\Charts\KedelaiChart;
+use App\Charts\BawangMerahChart;
+use App\Charts\BawangPutihChart;
+use App\Charts\CabaiMerahKeritingChart;
+use App\Charts\CabaiRawitMerahChart;
+use App\Charts\DagingSapiChart;
+use App\Charts\DagingAyamRasChart;
+use App\Charts\GaramChart;
+use App\Charts\GulaKonsumsiChart;
+use App\Charts\IkanBandengChart;
+use App\Charts\IkanKembungChart;
+use App\Charts\IkanTongkolChart;
+use App\Charts\JagungPipilanChart;
+use App\Charts\MinyakGorengCurahChart;
+use App\Charts\MinyakGorengKemasanChart;
+use App\Charts\TelurAyamRasChart;
+use App\Charts\TepungTeriguCurahChart;
+use App\Charts\TepungTeriguNonCurahChart;
+use App\User;
+use DB;
 
+use function Laravel\Prompts\alert;
 
-class HomeController extends Controller
+class WelcomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index(BerasPremiumChart $berasPremiumChart, BerasMediumChart $berasMediumChart, KedelaiChart $kedelaiChart)
+    public function index(BerasPremiumChart $berasPremiumChart, BerasMediumChart $berasMediumChart, KedelaiChart $kedelaiChart, BawangMerahChart $bawangMerahChart,
+                           BawangPutihChart $bawangPutihChart, CabaiMerahKeritingChart $cabaiMerahKeritingChart, CabaiRawitMerahChart $cabaiRawitMerahChart,
+                           DagingSapiChart $dagingSapiChart, DagingAyamRasChart $dagingAyamRasChart, TelurAyamRasChart $telurAyamRasChart,
+                           GulaKonsumsiChart $gulaKonsumsiChart, MinyakGorengKemasanChart $minyakGorengKemasanChart, TepungTeriguCurahChart $tepungTeriguCurahChart,
+                           MinyakGorengCurahChart $minyakGorengCurahChart, JagungPipilanChart $jagungPipilanChart, IkanBandengChart $ikanBandengChart, IkanKembungChart $ikanKembungChart,
+                           IkanTongkolChart $ikanTongkolChart, GaramChart $garamChart, TepungTeriguNonCurahChart $tepungTeriguNonCurahChart,
+                           )
     {
         $date_now        = Carbon::now();
         $date_yesterday  = Carbon::yesterday();
         $harga_hari_ini = Komoditi::whereDate('tanggal', '=', $date_now)->first();
         $harga_kemarin  = Komoditi::whereDate('tanggal', '=', $date_yesterday)->first();
 
-        //beras premium
+        //Chart
         $berasPremiumChart  = $berasPremiumChart->build();
         $berasMediumChart   = $berasMediumChart->build();
         $kedelaiChart       = $kedelaiChart->build();
+        $bawangMerahChart   = $bawangMerahChart->build();
+        $bawangPutihChart   = $bawangPutihChart->build();
+        $cabaiMerahKeritingChart   = $cabaiMerahKeritingChart->build();
+        $cabaiRawitMerahChart      = $cabaiRawitMerahChart->build();
+        $dagingSapiChart           = $dagingSapiChart->build();
+        $dagingAyamRasChart      = $dagingAyamRasChart->build();
+        $telurAyamRasChart       = $telurAyamRasChart->build();
+        $gulaKonsumsiChart       = $gulaKonsumsiChart->build();
+        $minyakGorengKemasanChart  = $minyakGorengKemasanChart->build();
+        $tepungTeriguCurahChart    = $tepungTeriguCurahChart->build();
+        $minyakGorengCurahChart    = $minyakGorengCurahChart->build();
+        $jagungPipilanChart        = $jagungPipilanChart->build();
+        $ikanKembungChart        = $ikanKembungChart->build();
+        $ikanBandengChart        = $ikanBandengChart->build();
+        $ikanTongkolChart        = $ikanTongkolChart->build();
+        $garamChart        = $garamChart->build();
+        $tepungTeriguNonCurahChart        = $tepungTeriguNonCurahChart->build();
 
 
         $users = User::count();
@@ -91,7 +117,7 @@ class HomeController extends Controller
             $ikan_tongkol               = $harga_hari_ini->ikan_tongkol    -  $harga_kemarin->ikan_tongkol   ;
             $ikan_bandeng               = $harga_hari_ini->ikan_bandeng    -  $harga_kemarin->ikan_bandeng   ;
             $garam                      = $harga_hari_ini->garam    -  $harga_kemarin->garam   ;
-            $tepung_terigu_non_curah       = $harga_hari_ini->tepung_terigu_non_curah    -  $harga_kemarin->tepung_terigu_non_curah   ;
+            $tepung_terigu_non_curah    = $harga_hari_ini->tepung_terigu_non_curah    -  $harga_kemarin->tepung_terigu_non_curah   ;
             
         }
 
@@ -336,7 +362,7 @@ class HomeController extends Controller
         }
         
 
-        return view('home', compact('widget','harga_hari_ini','harga_kemarin','beras_premium','beras_medium','kedelai','bawang_merah',
+        return view('welcome', compact('widget','harga_hari_ini','harga_kemarin','beras_premium','beras_medium','kedelai','bawang_merah',
                                     'span_class_premium','i_class_premium','span_class_medium','i_class_medium','span_class_bawang_merah',
                                     'bawang_putih','span_class_bawang_putih','i_class_bawang_putih',
                                     'span_class_kedelai','i_class_kedelai','i_class_bawang_merah',
@@ -355,8 +381,150 @@ class HomeController extends Controller
                                     'ikan_bandeng','span_class_ikan_bandeng','i_class_ikan_bandeng',
                                     'garam','span_class_garam','i_class_garam',
                                     'tepung_terigu_non_curah','span_class_tepung_terigu_non_curah','i_class_tepung_terigu_non_curah',
-                                    'berasPremiumChart','berasMediumChart','kedelaiChart',
+                                    'berasPremiumChart','berasMediumChart','kedelaiChart','bawangMerahChart','bawangPutihChart',
+                                    'cabaiMerahKeritingChart','cabaiRawitMerahChart','dagingSapiChart','dagingAyamRasChart','telurAyamRasChart',
+                                    'gulaKonsumsiChart','minyakGorengKemasanChart', 'tepungTeriguCurahChart','minyakGorengCurahChart',
+                                    'jagungPipilanChart','ikanKembungChart','ikanBandengChart','ikanTongkolChart','garamChart','tepungTeriguNonCurahChart'
                                     
                     ));
     }
+
+    public function harga_eceran()
+    {
+
+        $date = Carbon::now()->subdays(6);
+        //dd($tes);
+        if (!request()->start_date){
+            $komoditas = Komoditi::whereDate('tanggal', '>=', $date)->get();
+        } elseif (!request()->end_date) {
+            alert('Input tanggal akhir');
+            $komoditas = Komoditi::whereDate('tanggal', '>=', $date)->get();
+        }        
+        else{
+            $komoditas = Komoditi::orderBy('tanggal','ASC')
+            ->when(request()->start_date, function($komoditas){
+                $komoditas->whereDate('tanggal', '>=', request()->start_date)
+                    ->whereDate('tanggal', '<=', request()->end_date);
+            })
+            ->get();
+        };
+
+        return view('front.harga-eceran', compact('komoditas'));
+    }
+
+    public function perkembangan_harga()
+    {
+        $cari = request()->jenis_komoditas;
+
+        switch(request()->jenis_komoditas) {
+            case('beras_premium'):
+                $komoditas = "Beras Premium";
+                break;
+            case('beras_medium'):
+                $komoditas = "Beras Medium";                
+                break;
+            case('kedelai'):
+                $komoditas = "Kedelai Biji Kering (Import)";                
+                break;
+            case('bawang_merah'):
+                $komoditas = "Bawang Merah";                
+                break;
+            case('bawang_putih'):
+                $komoditas = "Bawang Putih";                
+                break;
+            case('cabai_merah_keriting'):
+                $komoditas = "Cabai Merah Keriting";                
+                break;
+            case('cabai_rawit_merah'):
+                $komoditas = "Cabai Rawit Merah";                
+                break;
+            case('daging_sapi'):
+                $komoditas = "Daging Sapi";                
+                break;
+            case('daging_ayam_ras'):
+                $komoditas = "Daging Ayam Ras";                
+                break;
+            case('telur_ayam_ras'):
+                $komoditas = "Telur Ayam Ras";                
+                break;
+            case('gula_konsumsi'):
+                $komoditas = "Gula Konsumsi";                
+                break;
+            case('minyak_goreng_kemasan'):
+                $komoditas = "Minyak Goreng Kemasan";                
+                break;
+            case('tepung_terigu_curah'):
+                $komoditas = "Tepung Terigu Curah";                
+                break;
+            case('minyak_goreng_curah'):
+                $komoditas = "Minyak Goreng Curah";                
+                break;
+            case('jagung_pipilan'):
+                $komoditas = "Jagung Pipilan";                
+                break;
+            case('ikan_kembung'):
+                $komoditas = "Ikan Kembung";                
+                break;
+            case('ikan_tongkol'):
+                $komoditas = "Ikan Tongkol";                
+                break;
+            case('ikan_kembung'):
+                $komoditas = "Ikan Kembung";                
+                break;
+            case('ikan_bandeng'):
+                $komoditas = "Ikan Bandeng";                
+                break;
+            case('garam'):
+                $komoditas = "Garam Beryodium";                
+                break;
+            case('tepung_terigu_non_curah'):
+                $komoditas = "Tepung Terigu Non Curah";                
+                break;
+            default:
+                $komoditas = 'Beras Premium';
+        }
+
+        $date   = Carbon::now()->subdays(29);
+        $date2  = Carbon::now();
+        $tahun_ini      = Carbon::now()->format('Y');
+        $tahun_kemarin  = $date2->subYear()->format('Y');
+
+        if (!request()->jenis_komoditas){
+            $cari = 'beras_premium';
+            $data['berasPremium_30']   = Komoditi::whereDate('tanggal', '>=', $date)->orderBy('tanggal','ASC')->pluck('beras_premium');
+            $data['tanggal_30']        = Komoditi::whereDate('tanggal', '>=', $date)->orderBy('tanggal','ASC')->pluck('tanggal');
+    
+            $data['berasPremium2023'] = Komoditi::select(DB::raw("CAST(AVG(beras_premium) as int) as rata_bulan"))
+                            ->whereYear('tanggal',$tahun_kemarin)
+                            ->GroupBy(DB::raw("Month(tanggal)"))
+                            ->orderBy(DB::raw("Month(tanggal)"), 'ASC')
+                            ->pluck('rata_bulan');
+            
+            $data['berasPremium2024'] = Komoditi::select(DB::raw("CAST(AVG(beras_premium) as int) as rata_bulan"))
+                            ->whereYear('tanggal',$tahun_ini)
+                            ->GroupBy(DB::raw("Month(tanggal)"))
+                            ->orderBy(DB::raw("Month(tanggal)"), 'ASC')
+                            ->pluck('rata_bulan');
+        } else {
+            $data['berasPremium_30']   = Komoditi::whereDate('tanggal', '>=', $date)->orderBy('tanggal','ASC')->pluck($cari);
+            $data['tanggal_30']        = Komoditi::whereDate('tanggal', '>=', $date)->orderBy('tanggal','ASC')->pluck('tanggal');
+    
+            $data['berasPremium2023'] = Komoditi::select(DB::raw("CAST(AVG($cari) as int) as rata_bulan"))
+                            ->whereYear('tanggal',$tahun_kemarin)
+                            ->GroupBy(DB::raw("Month(tanggal)"))
+                            ->orderBy(DB::raw("Month(tanggal)"), 'ASC')
+                            ->pluck('rata_bulan');
+            
+            $data['berasPremium2024'] = Komoditi::select(DB::raw("CAST(AVG($cari) as int) as rata_bulan"))
+                            ->whereYear('tanggal',$tahun_ini)
+                            ->GroupBy(DB::raw("Month(tanggal)"))
+                            ->orderBy(DB::raw("Month(tanggal)"), 'ASC')
+                            ->pluck('rata_bulan');
+        };
+
+
+        return view('front.perkembangan-harga', $data, compact('komoditas'));
+    }
+
+    
 }
